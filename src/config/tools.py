@@ -17,4 +17,4 @@ class SearchEngine(enum.Enum):
 
 # Tool configuration
 SELECTED_SEARCH_ENGINE = os.getenv("SEARCH_API", SearchEngine.TAVILY.value)
-SEARCH_MAX_RESULTS = 3
+SEARCH_MAX_RESULTS = 20

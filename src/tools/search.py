@@ -13,6 +13,9 @@ from src.config import SEARCH_MAX_RESULTS
 from src.tools.tavily_search.tavily_search_results_with_images import (
     TavilySearchResultsWithImages,
 )
+from src.tools.searxng_search.searxng_search_results import (
+    SearXNGSearchResults,
+)
 
 from .decorators import create_logged_tool
 
@@ -52,6 +55,22 @@ arxiv_search_tool = LoggedArxivSearch(
     ),
 )
 
+LoggedSearXNGSearch = create_logged_tool(SearXNGSearchResults)
+searxng_search_tool = LoggedSearXNGSearch(
+    name="web_search",
+    max_results=SEARCH_MAX_RESULTS,
+    include_images=True,
+    language=os.getenv("SEARXNG_LANGUAGE", "all"),
+    categories=os.getenv("SEARXNG_CATEGORIES", "").split(",") if os.getenv("SEARXNG_CATEGORIES") else None,
+    engines=os.getenv("SEARXNG_ENGINES", "").split(",") if os.getenv("SEARXNG_ENGINES") else None,
+)
+
 if __name__ == "__main__":
     results = tavily_search_tool.invoke("cute panda")
     print(json.dumps(results, indent=2, ensure_ascii=False))
+    
+    # Test SearXNG search
+    if os.getenv("SEARXNG_URL"):
+        print("\nTesting SearXNG search:")
+        results = searxng_search_tool.invoke("cute panda")
+        print(json.dumps(results, indent=2, ensure_ascii=False))
