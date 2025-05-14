@@ -6,20 +6,49 @@ dist/
 wheels/
 *.egg-info
 .coverage
+
+# Generated files
 agent_history.gif
 static/browser_history/*.gif
 
 # Virtual environments
-.venv
+.venv/
+venv/
+env/
 
 # Environment variables
 .env
+.env.prod
+.env.local
 
-# user conf
+# User configuration
 conf.yaml
 
+# IDE files
 .idea/
-.langgraph_api/
+.vscode/
+*.sublime-*
 
-logs/*.tmp
-logs/*.log
+# Logs
+logs/
+*.log
+*.tmp
+
+# Node.js related
+node_modules/
+.pnpm-cache/
+.pnpm-store/
+
+# Docker related
+.docker/
+docker-compose.override.yaml
+
+# Production builds
+web/.next/
+web/out/
+web/build/
+
+# Temporary files
+*.bak
+*.swp
+.DS_Store
