@@ -17,10 +17,9 @@ from src.tools.searxng_search.searxng_search_results import (
     SearXNGSearchResults,
 )
 
-from .decorators import create_logged_tool
+from src.tools.decorators import create_logged_tool
 
 logger = logging.getLogger(__name__)
-
 
 LoggedTavilySearch = create_logged_tool(TavilySearchResultsWithImages)
 tavily_search_tool = LoggedTavilySearch(
@@ -66,7 +65,9 @@ searxng_search_tool = LoggedSearXNGSearch(
 )
 
 if __name__ == "__main__":
-    results = tavily_search_tool.invoke("cute panda")
+    results = LoggedDuckDuckGoSearch(
+        name="web_search", max_results=SEARCH_MAX_RESULTS, output_format="list"
+    ).invoke("cute panda")
     print(json.dumps(results, indent=2, ensure_ascii=False))
     
     # Test SearXNG search

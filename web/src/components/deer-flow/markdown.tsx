@@ -13,30 +13,44 @@ import "katex/dist/katex.min.css";
 
 import { Button } from "~/components/ui/button";
 import { rehypeSplitWordsIntoSpans } from "~/core/rehype";
+import { autoFixMarkdown } from "~/core/utils/markdown";
 import { cn } from "~/lib/utils";
 
 import Image from "./image";
 import { Tooltip } from "./tooltip";
+
+const components: ReactMarkdownOptions["components"] = {
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  ),
+  img: ({ src, alt }) => (
+    <a href={src as string} target="_blank" rel="noopener noreferrer">
+      <Image className="rounded" src={src as string} alt={alt ?? ""} />
+    </a>
+  ),
+};
 
 export function Markdown({
   className,
   children,
   style,
   enableCopy,
-  animate = false,
+  animated = false,
   ...props
 }: ReactMarkdownOptions & {
   className?: string;
   enableCopy?: boolean;
   style?: React.CSSProperties;
-  animate?: boolean;
+  animated?: boolean;
 }) {
   const rehypePlugins = useMemo(() => {
-    if (animate) {
+    if (animated) {
       return [rehypeKatex, rehypeSplitWordsIntoSpans];
     }
     return [rehypeKatex];
-  }, [animate]);
+  }, [animated]);
   return (
     <div
       className={cn(
@@ -48,21 +62,12 @@ export function Markdown({
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={rehypePlugins}
-        components={{
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          ),
-          img: ({ src, alt }) => (
-            <a href={src as string} target="_blank" rel="noopener noreferrer">
-              <Image className="rounded" src={src as string} alt={alt ?? ""} />
-            </a>
-          ),
-        }}
+        components={components}
         {...props}
       >
-        {dropMarkdownQuote(processKatexInMarkdown(children))}
+        {autoFixMarkdown(
+          dropMarkdownQuote(processKatexInMarkdown(children ?? "")) ?? "",
+        )}
       </ReactMarkdown>
       {enableCopy && typeof children === "string" && (
         <div className="flex">
