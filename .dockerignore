@@ -50,3 +50,14 @@ examples/
 assets/
 tests/
 *.log
+
+# Docker
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
