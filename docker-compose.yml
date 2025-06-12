@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: deer-flow-backend
     ports:
-      - "8000:8000"
+      - "8701:8000"
     env_file:
       - .env
     volumes:
@@ -22,9 +22,11 @@ services:
         - NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
     container_name: deer-flow-frontend
     ports:
-      - "3000:3000"
+      - "8702:3000"
     env_file:
       - .env
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8701/api  # 容器间通信
     depends_on:
       - backend
     restart: unless-stopped
