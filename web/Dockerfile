@@ -4,10 +4,12 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
+# 配置 npm 镜像源（使用淘宝镜像）
+RUN npm config set registry https://registry.npmmirror.com
 
 # Install dependencies based on the preferred package manager
 
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml\* ./
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 RUN \
     if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
@@ -20,6 +22,10 @@ RUN \
 
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# 配置 npm 镜像源（使用淘宝镜像）
+RUN npm config set registry https://registry.npmmirror.com
+
 ARG NEXT_PUBLIC_API_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -35,12 +41,14 @@ RUN \
 
 ##### RUNNER
 
-FROM gcr.io/distroless/nodejs20-debian12 AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# 安装必要的运行时依赖
+RUN apk add --no-cache dumb-init
 
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
@@ -52,4 +60,6 @@ COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000
 ENV PORT=3000
 
-CMD ["server.js"]
+# 使用 dumb-init 作为 init 进程
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]
