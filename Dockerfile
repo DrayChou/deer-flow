@@ -5,6 +5,14 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
+# 接收构建参数
+ARG UV_INDEX_URL=https://pypi.org/simple/
+ARG UV_TRUSTED_HOST=pypi.org
+
+# 设置环境变量
+ENV UV_INDEX_URL=$UV_INDEX_URL
+ENV UV_TRUSTED_HOST=$UV_TRUSTED_HOST
+
 # Pre-cache the application dependencies.
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
