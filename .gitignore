@@ -26,3 +26,6 @@ conf.yaml
 coverage.xml
 coverage/
 .lh
+/.specstory
+CLAUDE.md
+.claude
